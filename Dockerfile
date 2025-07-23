@@ -16,5 +16,5 @@ COPY . .
 
 EXPOSE 3000
 
-# Use dev server on port 3000
-CMD ["sh", "-c", "pnpm run dev --port 3000 --hostname 0.0.0.0"]
+# Use dev server with Render's PORT or default to 3000, disable turbopack
+CMD ["sh", "-c", "next dev --port ${PORT:-3000} --hostname 0.0.0.0"]
