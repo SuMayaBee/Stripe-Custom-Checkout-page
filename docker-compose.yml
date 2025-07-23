@@ -5,10 +5,12 @@ services:
     build: .
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - NEXT_TELEMETRY_DISABLED=1
-      # Add your Stripe keys here
-      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:-pk_test_your_key}
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-sk_test_your_key}
     restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules
