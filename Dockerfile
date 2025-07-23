@@ -16,5 +16,5 @@ COPY . .
 
 EXPOSE 3000
 
-# Use dev server with Render's PORT or default to 3000
-CMD ["sh", "-c", "PORT=${PORT:-3000} pnpm run dev -- --hostname 0.0.0.0 --port $PORT"]
+# Use dev server - simple approach
+CMD ["pnpm", "run", "dev"]
