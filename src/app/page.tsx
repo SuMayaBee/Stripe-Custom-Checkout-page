@@ -3,14 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { CheckCircle, CreditCard, Shield, Lightning } from "@phosphor-icons/react";
+import { CheckCircle } from "@phosphor-icons/react";
 import Image from "next/image";
 
 export default function HomePage() {
-	const [amount, setAmount] = useState("");
-	const [serviceDescription, setServiceDescription] = useState("");
-	const [paymentReason, setPaymentReason] = useState("");
 	const [showSuccess, setShowSuccess] = useState(false);
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -27,21 +23,8 @@ export default function HomePage() {
 		}
 	}, [searchParams]);
 
-	const handleProceed = () => {
-		const numAmount = parseFloat(amount);
-		if (numAmount && numAmount > 0) {
-			const params = new URLSearchParams({
-				amount: numAmount.toString(),
-				service: serviceDescription,
-				reason: paymentReason
-			});
-			router.push(`/checkout?${params.toString()}`);
-		}
-	};
-
 	const handleNewPayment = () => {
 		setShowSuccess(false);
-		setAmount("");
 	};
 
 	if (showSuccess) {

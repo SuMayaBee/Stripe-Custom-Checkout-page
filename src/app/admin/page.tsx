@@ -434,7 +434,7 @@ export default function AdminPage() {
 									</tr>
 								</thead>
 								<tbody className="bg-white/50 divide-y divide-gray-100">
-									{paymentLinks.map((link, index) => (
+									{paymentLinks.map((link) => (
 										<tr key={link.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-300 group">
 											<td className="px-8 py-6 whitespace-nowrap">
 												<div className="flex items-center">
