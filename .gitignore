@@ -25,7 +25,7 @@
 *.pem
 
 # Typescript
-tsconfig.tsbuildinfo
+
 
 # debug
 npm-debug.log*
