@@ -14,10 +14,7 @@ RUN pnpm install
 # Copy source code
 COPY . .
 
-# Build the application
-RUN pnpm run build
-
 EXPOSE 3000
 
-# Start the production server
-CMD ["pnpm", "start"]
+# Use dev server which was working before
+CMD ["pnpm", "run", "dev"]
