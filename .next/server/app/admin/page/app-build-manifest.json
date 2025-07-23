@@ -1,0 +1,22 @@
+{
+  "pages": {
+    "/admin/page": [
+      "static/chunks/_2f9174._.js",
+      "static/chunks/src_app_favicon_ico_mjs_ebb3e6._.js",
+      "static/chunks/[root of the server]__df515c._.css",
+      "static/chunks/_c14746._.js",
+      "static/chunks/src_app_layout_tsx_47580e._.js",
+      "static/chunks/src_e3900b._.js",
+      "static/chunks/node_modules__pnpm_c1ba3a._.js",
+      "static/chunks/src_app_admin_page_tsx_2669b9._.js",
+      "static/chunks/a8a29_next_dist_compiled_react-dom_e53504._.js",
+      "static/chunks/a8a29_next_dist_compiled_8f968e._.js",
+      "static/chunks/a8a29_next_dist_client_267185._.js",
+      "static/chunks/a8a29_next_dist_1db935._.js",
+      "static/chunks/61dca_@swc_helpers_cjs_e27e0a._.js",
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_992777._.js",
+      "static/chunks/_e69f0d._.js",
+      "static/chunks/_077ad0._.js"
+    ]
+  }
+}

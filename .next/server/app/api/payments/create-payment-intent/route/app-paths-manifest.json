@@ -1,0 +1,3 @@
+{
+  "/api/payments/create-payment-intent/route": "app/api/payments/create-payment-intent/route.js"
+}

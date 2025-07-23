@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  // Remove standalone output for simpler Docker setup
 };
 
 export default nextConfig;

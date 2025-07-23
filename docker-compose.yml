@@ -1,28 +1,14 @@
 version: '3.8'
 
 services:
-  nextjs-stripe-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  stripe-payment-app:
+    build: .
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
-      # Add your environment variables here
-      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-    volumes:
-      # Optional: Mount a volume for persistent data if needed
-      - app_data:/app/data
+      # Add your Stripe keys here
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:-pk_test_your_key}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-sk_test_your_key}
     restart: unless-stopped
-    networks:
-      - stripe_network
-
-volumes:
-  app_data:
-
-networks:
-  stripe_network:
-    driver: bridge
