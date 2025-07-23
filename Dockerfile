@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Use dev server on port 3000
-CMD ["pnpm", "run", "dev", "--", "--port", "3000", "--hostname", "0.0.0.0"]
+CMD ["sh", "-c", "pnpm run dev --port 3000 --hostname 0.0.0.0"]
