@@ -16,5 +16,5 @@ COPY . .
 
 EXPOSE 3000
 
-# Use dev server with explicit port configuration
-CMD ["sh", "-c", "echo 'Starting app on port 3000...' && pnpm run dev -- --port 3000 --hostname 0.0.0.0"]
+# Use dev server with port and hostname via environment variables
+CMD ["sh", "-c", "echo 'Starting app on port 3000...' && PORT=3000 pnpm run dev -- --hostname 0.0.0.0"]
