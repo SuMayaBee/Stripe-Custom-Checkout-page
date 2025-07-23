@@ -14,8 +14,10 @@ RUN pnpm install
 # Copy source code
 COPY . .
 
-# Environment variables will be passed at runtime
+# Build the application
+RUN pnpm run build
 
 EXPOSE 3000
 
-CMD ["pnpm", "run", "dev"]
+# Start the production server
+CMD ["pnpm", "start"]
