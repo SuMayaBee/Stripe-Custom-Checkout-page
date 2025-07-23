@@ -11,6 +11,7 @@ export default function HomePage() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
+	// All hooks must be at the top level
 	useEffect(() => {
 		// Check if user was redirected back after successful payment
 		const redirectStatus = searchParams.get('redirect_status');
@@ -20,8 +21,11 @@ export default function HomePage() {
 			setShowSuccess(true);
 			// Clean up URL after showing success
 			window.history.replaceState({}, '', '/');
+		} else {
+			// Redirect to admin panel if not showing success
+			router.push('/admin');
 		}
-	}, [searchParams]);
+	}, [searchParams, router]);
 
 	const handleNewPayment = () => {
 		setShowSuccess(false);
@@ -81,11 +85,6 @@ export default function HomePage() {
 			</div>
 		);
 	}
-
-	// Redirect to admin panel
-	React.useEffect(() => {
-		router.push('/admin');
-	}, [router]);
 
 	return (
 		<div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center">
