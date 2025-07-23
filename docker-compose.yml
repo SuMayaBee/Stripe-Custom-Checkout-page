@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  nextjs-stripe-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      # Add your environment variables here
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+    volumes:
+      # Optional: Mount a volume for persistent data if needed
+      - app_data:/app/data
+    restart: unless-stopped
+    networks:
+      - stripe_network
+
+volumes:
+  app_data:
+
+networks:
+  stripe_network:
+    driver: bridge
