@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "@phosphor-icons/react";
 import Image from "next/image";
 
-export default function HomePage() {
+function HomePageContent() {
 	const [showSuccess, setShowSuccess] = useState(false);
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -93,5 +93,20 @@ export default function HomePage() {
 				<p className="text-gray-600">Redirecting to admin panel...</p>
 			</div>
 		</div>
+	);
+}
+export d
+efault function HomePage() {
+	return (
+		<Suspense fallback={
+			<div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center">
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+					<p className="text-gray-600">Loading...</p>
+				</div>
+			</div>
+		}>
+			<HomePageContent />
+		</Suspense>
 	);
 }
