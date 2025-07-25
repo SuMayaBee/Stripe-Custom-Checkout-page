@@ -39,7 +39,8 @@ yarn-error.log*
 # vercel
 .vercel
 
-
+# data directory - keep structure but ignore content in production
+# data/
 
 abc.txt
 

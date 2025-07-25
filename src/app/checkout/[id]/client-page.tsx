@@ -5,12 +5,18 @@ import { StripeCheckoutForm } from "@/features/billing/components/checkout-form"
 import { CreditCard, Shield, Lock } from "@phosphor-icons/react";
 import Image from "next/image";
 
-// This would normally come from a database
-function getPaymentLinkData(id: string) {
-	if (typeof window === 'undefined') return null;
-	
-	const paymentLinks = JSON.parse(localStorage.getItem('paymentLinks') || '[]');
-	return paymentLinks.find((link: any) => link.id === id);
+// Fetch payment link data from API
+async function getPaymentLinkData(id: string) {
+	try {
+		const response = await fetch(`/api/payment-links/${id}`);
+		if (!response.ok) {
+			return null;
+		}
+		return await response.json();
+	} catch (error) {
+		console.error('Error fetching payment link:', error);
+		return null;
+	}
 }
 
 function SecureCheckoutInfo() {
@@ -164,14 +170,18 @@ export default function ClientCheckoutPage({ id }: { id: string }) {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		const data = getPaymentLinkData(id);
-		if (!data) {
-			// Redirect to 404 or error page if payment link not found
-			window.location.href = '/404';
-			return;
-		}
-		setPaymentData(data);
-		setLoading(false);
+		const fetchPaymentData = async () => {
+			const data = await getPaymentLinkData(id);
+			if (!data) {
+				// Redirect to 404 or error page if payment link not found
+				window.location.href = '/404';
+				return;
+			}
+			setPaymentData(data);
+			setLoading(false);
+		};
+
+		fetchPaymentData();
 	}, [id]);
 
 	if (loading) {
@@ -270,7 +280,7 @@ export default function ClientCheckoutPage({ id }: { id: string }) {
 					</div>
 
 					<div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-						<StripeCheckoutForm amount={paymentData.amount} />
+						<StripeCheckoutForm amount={paymentData.amount} paymentLinkId={id} />
 					</div>
 
 					<div className="mt-6 text-center">

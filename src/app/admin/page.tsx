@@ -48,29 +48,28 @@ export default function AdminPage() {
 		setLoading(false);
 	}, []);
 
-	const generatePaymentLink = () => {
-		const id = Math.random().toString(36).substr(2, 9);
-		const link = `${window.location.origin}/checkout/${id}`;
-		
-		const newPaymentLink: PaymentLink = {
-			id,
-			service: formData.service,
-			reason: formData.reason,
-			amount: parseFloat(formData.amount),
-			clientName: formData.clientName || "—",
-			clientEmail: formData.clientEmail || "—",
-			createdAt: new Date().toLocaleDateString(),
-			link
-		};
+	const generatePaymentLink = async () => {
+		try {
+			const response = await fetch('/api/payment-links', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formData),
+			});
 
-		// Store in localStorage (in production, use a database)
-		const existingLinks = JSON.parse(localStorage.getItem('paymentLinks') || '[]');
-		const updatedLinks = [...existingLinks, newPaymentLink];
-		localStorage.setItem('paymentLinks', JSON.stringify(updatedLinks));
-		
-		setPaymentLinks(updatedLinks);
-		setFormData({ service: "", reason: "", amount: "", clientName: "", clientEmail: "" });
-		setShowCreateForm(false);
+			if (!response.ok) {
+				throw new Error('Failed to create payment link');
+			}
+
+			const newPaymentLink = await response.json();
+			setPaymentLinks(prev => [...prev, newPaymentLink]);
+			setFormData({ service: "", reason: "", amount: "", clientName: "", clientEmail: "" });
+			setShowCreateForm(false);
+		} catch (error) {
+			console.error('Error creating payment link:', error);
+			alert('Failed to create payment link. Please try again.');
+		}
 	};
 
 	const copyToClipboard = (link: string) => {
@@ -78,17 +77,38 @@ export default function AdminPage() {
 		alert('Payment link copied to clipboard!');
 	};
 
-	const deletePaymentLink = (id: string) => {
-		const updatedLinks = paymentLinks.filter(link => link.id !== id);
-		setPaymentLinks(updatedLinks);
-		localStorage.setItem('paymentLinks', JSON.stringify(updatedLinks));
+	const deletePaymentLink = async (id: string) => {
+		try {
+			const response = await fetch(`/api/payment-links?id=${id}`, {
+				method: 'DELETE',
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to delete payment link');
+			}
+
+			setPaymentLinks(prev => prev.filter(link => link.id !== id));
+		} catch (error) {
+			console.error('Error deleting payment link:', error);
+			alert('Failed to delete payment link. Please try again.');
+		}
 	};
 
 	// Load payment links on component mount
 	React.useEffect(() => {
 		if (isAuthenticated) {
-			const savedLinks = JSON.parse(localStorage.getItem('paymentLinks') || '[]');
-			setPaymentLinks(savedLinks);
+			const fetchPaymentLinks = async () => {
+				try {
+					const response = await fetch('/api/payment-links');
+					if (response.ok) {
+						const links = await response.json();
+						setPaymentLinks(links);
+					}
+				} catch (error) {
+					console.error('Error fetching payment links:', error);
+				}
+			};
+			fetchPaymentLinks();
 		}
 	}, [isAuthenticated]);
 
@@ -123,11 +143,11 @@ export default function AdminPage() {
 		};
 
 		localStorage.setItem('adminCredentials', JSON.stringify(newCredentials));
-		
+
 		// Clear form and close modal
 		setSettingsData({ username: "", password: "", confirmPassword: "" });
 		setShowSettings(false);
-		
+
 		// Show success message and logout
 		alert('Credentials updated successfully! You will be logged out.');
 		handleLogout();
@@ -206,12 +226,12 @@ export default function AdminPage() {
 					<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 						<div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
 							<h2 className="text-2xl font-bold mb-6 text-gray-900">Create Payment Link</h2>
-							
+
 							<div className="space-y-4">
 								{/* Required Fields */}
 								<div className="border-b border-gray-200 pb-4 mb-4">
 									<h3 className="text-sm font-medium text-gray-900 mb-3">Required Information</h3>
-									
+
 									<div className="space-y-3">
 										<div>
 											<label className="block text-sm font-medium text-gray-700 mb-1">
@@ -220,7 +240,7 @@ export default function AdminPage() {
 											<Input
 												placeholder="Website Development, Logo Design, Consulting..."
 												value={formData.service}
-												onChange={(e) => setFormData({...formData, service: e.target.value})}
+												onChange={(e) => setFormData({ ...formData, service: e.target.value })}
 												required
 											/>
 										</div>
@@ -232,7 +252,7 @@ export default function AdminPage() {
 											<textarea
 												placeholder="Final payment for project completion, Monthly retainer..."
 												value={formData.reason}
-												onChange={(e) => setFormData({...formData, reason: e.target.value})}
+												onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
 												className="w-full h-20 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 												required
 											/>
@@ -246,7 +266,7 @@ export default function AdminPage() {
 												type="number"
 												placeholder="1500.00"
 												value={formData.amount}
-												onChange={(e) => setFormData({...formData, amount: e.target.value})}
+												onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
 												step="0.01"
 												min="1"
 												required
@@ -259,7 +279,7 @@ export default function AdminPage() {
 								<div>
 									<h3 className="text-sm font-medium text-gray-900 mb-3">Client Information (Optional)</h3>
 									<p className="text-xs text-gray-500 mb-3">Add client details for better organization and personalized checkout experience</p>
-									
+
 									<div className="space-y-3">
 										<div>
 											<label className="block text-sm font-medium text-gray-700 mb-1">
@@ -268,7 +288,7 @@ export default function AdminPage() {
 											<Input
 												placeholder="John Doe (optional)"
 												value={formData.clientName}
-												onChange={(e) => setFormData({...formData, clientName: e.target.value})}
+												onChange={(e) => setFormData({ ...formData, clientName: e.target.value })}
 											/>
 										</div>
 
@@ -280,7 +300,7 @@ export default function AdminPage() {
 												type="email"
 												placeholder="john@example.com (optional)"
 												value={formData.clientEmail}
-												onChange={(e) => setFormData({...formData, clientEmail: e.target.value})}
+												onChange={(e) => setFormData({ ...formData, clientEmail: e.target.value })}
 											/>
 										</div>
 									</div>
@@ -312,7 +332,7 @@ export default function AdminPage() {
 					<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 						<div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
 							<h2 className="text-2xl font-bold mb-6 text-gray-900">Admin Settings</h2>
-							
+
 							<div className="space-y-4">
 								<div>
 									<label className="block text-sm font-medium text-gray-700 mb-1">
@@ -321,7 +341,7 @@ export default function AdminPage() {
 									<Input
 										placeholder="Enter new username"
 										value={settingsData.username}
-										onChange={(e) => setSettingsData({...settingsData, username: e.target.value})}
+										onChange={(e) => setSettingsData({ ...settingsData, username: e.target.value })}
 									/>
 								</div>
 
@@ -333,7 +353,7 @@ export default function AdminPage() {
 										type="password"
 										placeholder="Enter new password"
 										value={settingsData.password}
-										onChange={(e) => setSettingsData({...settingsData, password: e.target.value})}
+										onChange={(e) => setSettingsData({ ...settingsData, password: e.target.value })}
 									/>
 								</div>
 
@@ -345,7 +365,7 @@ export default function AdminPage() {
 										type="password"
 										placeholder="Confirm new password"
 										value={settingsData.confirmPassword}
-										onChange={(e) => setSettingsData({...settingsData, confirmPassword: e.target.value})}
+										onChange={(e) => setSettingsData({ ...settingsData, confirmPassword: e.target.value })}
 									/>
 								</div>
 

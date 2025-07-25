@@ -14,10 +14,11 @@ import { Input } from "@/components/ui/input";
 import { api } from "@/lib/utils";
 import axios from "axios";
 
-async function createPaymentIntent(amount: number) {
+async function createPaymentIntent(amount: number, paymentLinkId?: string) {
 	try {
 		const response = await api.post("/payments/create-payment-intent", {
 			amount,
+			paymentLinkId,
 		});
 		return response.data;
 	} catch (error) {
@@ -30,7 +31,7 @@ async function createPaymentIntent(amount: number) {
 	}
 }
 
-function CheckoutForm({ amount }: { amount: number }) {
+function CheckoutForm({ amount, paymentLinkId }: { amount: number; paymentLinkId?: string }) {
 	const [cardholderName, setCardholderName] = React.useState<string>("");
 	const [cardholderEmail, setCardholderEmail] = React.useState<string>("");
 	const [paymentType, setPaymentType] = React.useState<string>("");
@@ -72,7 +73,7 @@ function CheckoutForm({ amount }: { amount: number }) {
 		setPaymentStatus("processing");
 
 		try {
-			const { clientSecret } = await createPaymentIntent(amount);
+			const { clientSecret } = await createPaymentIntent(amount, paymentLinkId);
 
 			const { error: submitError } = await elements.submit();
 			if (submitError) throw submitError;
@@ -145,26 +146,14 @@ function CheckoutForm({ amount }: { amount: number }) {
 	);
 }
 
-export function StripeCheckoutForm({ amount }: { amount: number }) {
-	const [clientSecret, setClientSecret] = React.useState<string | null>(null);
-
-	React.useEffect(() => {
-		createPaymentIntent(amount)
-			.then(({ clientSecret }) => setClientSecret(clientSecret))
-			.catch((error) =>
-				console.error("Error creating PaymentIntent:", error.message)
-			);
-	}, [amount]);
-
-	if (!clientSecret) {
-		return <CheckoutFormSkeleton />;
-	}
-
+export function StripeCheckoutForm({ amount, paymentLinkId }: { amount: number; paymentLinkId?: string }) {
 	return (
 		<Elements
 			stripe={getStripe()}
 			options={{
-				clientSecret,
+				mode: 'payment',
+				amount: Math.round(amount * 100),
+				currency: 'usd',
 				appearance: {
 					variables: {
 						colorIcon: "#6772e5",
@@ -173,7 +162,7 @@ export function StripeCheckoutForm({ amount }: { amount: number }) {
 					},
 				},
 			}}>
-			<CheckoutForm amount={amount} />
+			<CheckoutForm amount={amount} paymentLinkId={paymentLinkId} />
 		</Elements>
 	);
 }
