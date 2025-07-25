@@ -14,8 +14,8 @@ COPY .env* ./
 # Copy source code
 COPY . .
 
-# Build the application with environment variables
-RUN pnpm run build
+# Load environment variables and build the application
+RUN export $(cat .env | xargs) && pnpm run build
 
 # Expose port 3000
 EXPOSE 3000
