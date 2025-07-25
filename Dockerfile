@@ -11,7 +11,10 @@ RUN corepack enable pnpm && pnpm install
 # Copy source code
 COPY . .
 
-# Build the application
+# Copy environment variables for build
+COPY .env ./
+
+# Build the application with environment variables
 RUN pnpm run build
 
 # Expose port 3000
