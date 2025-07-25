@@ -16,7 +16,7 @@ function HomePageContent() {
 		// Check if user was redirected back after successful payment
 		const redirectStatus = searchParams.get('redirect_status');
 		const paymentIntent = searchParams.get('payment_intent');
-		
+
 		if (redirectStatus === 'succeeded' && paymentIntent) {
 			setShowSuccess(true);
 			// Clean up URL after showing success
@@ -95,8 +95,8 @@ function HomePageContent() {
 		</div>
 	);
 }
-export d
-efault function HomePage() {
+
+export default function HomePage() {
 	return (
 		<Suspense fallback={
 			<div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center">
