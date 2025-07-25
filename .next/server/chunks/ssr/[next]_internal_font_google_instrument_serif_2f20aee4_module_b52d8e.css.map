@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack://[next]/internal/font/google/instrument_serif_2f20aee4.module.css"],"sourcesContent":["@font-face {\n    font-family: 'Instrument Serif Fallback';\n    src: local(\"Times New Roman\");\n    ascent-override: 117.94%;\ndescent-override: 36.93%;\nline-gap-override: 0.00%;\nsize-adjust: 83.94%;\n\n}\n.className {\n    font-family: 'Instrument Serif', 'Instrument Serif Fallback';\n    font-weight: 400;\nfont-style: normal;\n\n}\n.variable {\n    --font-instrument-serif: 'Instrument Serif', 'Instrument Serif Fallback';\n}\n"],"names":[],"mappings":"AAAA;;;;;;;;;AASA;;;;;;AAMA","ignoreList":[0]}},
-    {"offset": {"line": 19, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
-}
