@@ -8,11 +8,11 @@ COPY package.json pnpm-lock.yaml ./
 # Install dependencies
 RUN corepack enable pnpm && pnpm install
 
+# Copy environment file first
+COPY .env* ./
+
 # Copy source code
 COPY . .
-
-# Copy environment variables for build
-COPY .env ./
 
 # Build the application with environment variables
 RUN pnpm run build
