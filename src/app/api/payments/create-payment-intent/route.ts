@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/clients/stripe/server";
 import { getPaymentLinkById, updatePaymentLinkWithIntent } from "@/lib/payment-links";
+import { getBaseUrl } from "@/lib/config";
 import { z } from "zod";
 
 const createPaymentIntentSchema = z.object({

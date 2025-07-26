@@ -82,7 +82,7 @@ function CheckoutForm({ amount, paymentLinkId }: { amount: number; paymentLinkId
 				elements,
 				clientSecret,
 				confirmParams: {
-					return_url: `${window.location.origin}/success`,
+					return_url: `${window.location.origin}/`,
 					payment_method_data: {
 						billing_details: {
 							name: cardholderName,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPaymentLinks, addPaymentLink, deletePaymentLink, PaymentLink } from '@/lib/payment-links';
+import { getBaseUrl } from '@/lib/config';
 
 // GET - Fetch all payment links
 export async function GET() {
@@ -25,7 +26,8 @@ export async function POST(request: NextRequest) {
 
 		// Generate unique ID
 		const id = Math.random().toString(36).substring(2, 11);
-		const link = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/${id}`;
+		const baseUrl = getBaseUrl(request);
+		const link = `${baseUrl}/checkout/${id}`;
 
 		const newPaymentLink: PaymentLink = {
 			id,
