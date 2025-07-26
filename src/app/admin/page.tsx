@@ -117,7 +117,7 @@ export default function AdminPage() {
 		window.location.href = '/login';
 	};
 
-	const handleUpdateCredentials = () => {
+	const handleUpdateCredentials = async () => {
 		setSettingsError("");
 
 		// Validation
@@ -136,21 +136,35 @@ export default function AdminPage() {
 			return;
 		}
 
-		// Update credentials in localStorage
-		const newCredentials = {
-			username: settingsData.username,
-			password: settingsData.password
-		};
+		try {
+			const response = await fetch('/api/admin/update-credentials', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					username: settingsData.username,
+					password: settingsData.password
+				}),
+			});
 
-		localStorage.setItem('adminCredentials', JSON.stringify(newCredentials));
+			const data = await response.json();
 
-		// Clear form and close modal
-		setSettingsData({ username: "", password: "", confirmPassword: "" });
-		setShowSettings(false);
-
-		// Show success message and logout
-		alert('Credentials updated successfully! You will be logged out.');
-		handleLogout();
+			if (response.ok && data.success) {
+				// Clear form and close modal
+				setSettingsData({ username: "", password: "", confirmPassword: "" });
+				setShowSettings(false);
+				
+				// Show success message and logout
+				alert('Credentials updated successfully! You will be logged out.');
+				handleLogout();
+			} else {
+				setSettingsError(data.error || "Failed to update credentials");
+			}
+		} catch (error) {
+			console.error('Error updating credentials:', error);
+			setSettingsError("Failed to update credentials. Please try again.");
+		}
 	};
 
 	if (loading) {

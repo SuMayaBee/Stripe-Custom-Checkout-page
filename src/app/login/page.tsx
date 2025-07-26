@@ -20,18 +20,27 @@ export default function LoginPage() {
 		setLoading(true);
 		setError("");
 
-		// Simulate API call delay
-		await new Promise(resolve => setTimeout(resolve, 1000));
+		try {
+			const response = await fetch('/api/admin/login', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ username, password }),
+			});
 
-		// Get stored credentials or use defaults
-		const storedCredentials = JSON.parse(localStorage.getItem('adminCredentials') || '{"username": "admin", "password": "admin123"}');
+			const data = await response.json();
 
-		if (username === storedCredentials.username && password === storedCredentials.password) {
-			// Set authentication token
-			localStorage.setItem('adminAuth', 'true');
-			router.push('/admin');
-		} else {
-			setError("Invalid username or password");
+			if (response.ok && data.success) {
+				// Set authentication token
+				localStorage.setItem('adminAuth', 'true');
+				router.push('/admin');
+			} else {
+				setError(data.error || "Invalid username or password");
+			}
+		} catch (error) {
+			console.error('Login error:', error);
+			setError("Login failed. Please try again.");
 		}
 		
 		setLoading(false);
