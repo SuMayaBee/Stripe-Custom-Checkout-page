@@ -18,11 +18,52 @@ jobs:
     - name: Delete old docker container
       run: sudo docker rm -f nextjs-stripe-app || true
       
-    - name: Create data directory
+    - name: Backup and prepare data directory
       run: |
+        # Create backup directory with timestamp
+        BACKUP_DIR="/opt/backups/$(date +%Y%m%d_%H%M%S)"
+        sudo mkdir -p $BACKUP_DIR
+        
+        # Backup existing data if it exists
+        if [ -d "/opt/app-data" ] && [ "$(sudo ls -A /opt/app-data 2>/dev/null)" ]; then
+          sudo cp -r /opt/app-data/* $BACKUP_DIR/ 2>/dev/null || true
+          echo "📦 Data backed up to $BACKUP_DIR"
+        fi
+        
+        # Ensure data directory exists
         sudo mkdir -p /opt/app-data
-        sudo chown $USER:$USER /opt/app-data
-        echo "📁 Data directory created at /opt/app-data"
+        
+        # Initialize files if they don't exist
+        if [ ! -f /opt/app-data/admin-credentials.json ]; then
+          sudo bash -c 'cat > /opt/app-data/admin-credentials.json << EOF
+{
+  "username": "admin",
+  "passwordHash": "105a56bd657043859707b55e35eb9c18de5fa7482b7b042c77e285f3816864b27d1cf9639a76a5e6b157d7e0261c4552ff2e31aa4b30a85b5c1a84cd8df3c53e",
+  "salt": "66dd96cba3ec7e504d12c290d81d5ddd11a4c94e42f046867aeee5c0873c42af",
+  "lastUpdated": "'$(date -Iseconds)'"
+}
+EOF'
+          echo "🔑 Default admin credentials created"
+        else
+          echo "🔑 Existing admin credentials preserved"
+        fi
+        
+        if [ ! -f /opt/app-data/payment-links.json ]; then
+          sudo bash -c 'echo "[]" > /opt/app-data/payment-links.json'
+          echo "💳 Payment links file initialized"
+        else
+          echo "💳 Existing payment links preserved"
+        fi
+        
+        # Set proper permissions
+        sudo chown -R 1001:1001 /opt/app-data
+        sudo chmod 755 /opt/app-data
+        sudo chmod 644 /opt/app-data/* 2>/dev/null || true
+        
+        # Keep only last 5 backups
+        sudo find /opt/backups -maxdepth 1 -type d -name "20*" | sort | head -n -5 | sudo xargs rm -rf 2>/dev/null || true
+        
+        echo "📁 Data directory prepared at /opt/app-data"
       
     - name: Run Docker Container
       run: |
