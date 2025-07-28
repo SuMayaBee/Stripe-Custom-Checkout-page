@@ -24,8 +24,14 @@ ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
 # Build the application with environment variables
 RUN pnpm run build
 
+# Create data directory and set permissions
+RUN mkdir -p /app/data && chown -R node:node /app/data
+
 # Expose port 3000
 EXPOSE 3000
+
+# Switch to non-root user for security
+USER node
 
 # Start the application
 CMD ["pnpm", "start"]
