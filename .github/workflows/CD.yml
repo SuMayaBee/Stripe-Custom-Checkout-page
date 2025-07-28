@@ -35,14 +35,15 @@ jobs:
         
         # Initialize files if they don't exist
         if [ ! -f /opt/app-data/admin-credentials.json ]; then
-          sudo bash -c 'cat > /opt/app-data/admin-credentials.json << EOF
+          TIMESTAMP=$(date -Iseconds)
+          sudo bash -c "cat > /opt/app-data/admin-credentials.json << 'EOFCREDS'
 {
-  "username": "admin",
-  "passwordHash": "105a56bd657043859707b55e35eb9c18de5fa7482b7b042c77e285f3816864b27d1cf9639a76a5e6b157d7e0261c4552ff2e31aa4b30a85b5c1a84cd8df3c53e",
-  "salt": "66dd96cba3ec7e504d12c290d81d5ddd11a4c94e42f046867aeee5c0873c42af",
-  "lastUpdated": "'$(date -Iseconds)'"
+  \"username\": \"admin\",
+  \"passwordHash\": \"105a56bd657043859707b55e35eb9c18de5fa7482b7b042c77e285f3816864b27d1cf9639a76a5e6b157d7e0261c4552ff2e31aa4b30a85b5c1a84cd8df3c53e\",
+  \"salt\": \"66dd96cba3ec7e504d12c290d81d5ddd11a4c94e42f046867aeee5c0873c42af\",
+  \"lastUpdated\": \"$TIMESTAMP\"
 }
-EOF'
+EOFCREDS"
           echo "🔑 Default admin credentials created"
         else
           echo "🔑 Existing admin credentials preserved"
