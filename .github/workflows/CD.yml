@@ -1,0 +1,45 @@
+name: CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - name: Pull Docker image
+      run: sudo docker pull sumaiya369/checkout:latest
+      
+    - name: Delete old docker container
+      run: sudo docker rm -f nextjs-stripe-app || true
+      
+    - name: Create data directory
+      run: sudo mkdir -p /opt/app-data && sudo chown $USER:$USER /opt/app-data
+      
+    - name: Run Docker Container
+      run: |
+        sudo docker run -d \
+          --name nextjs-stripe-app \
+          --restart unless-stopped \
+          -p 3000:3000 \
+          -v /opt/app-data:/app/data \
+          sumaiya369/checkout:latest
+          
+    - name: Clean up old images
+      run: sudo docker image prune -f
+      
+    - name: Verify deployment
+      run: |
+        sleep 10
+        if curl -f http://localhost:3000/api/health > /dev/null 2>&1; then
+          echo "✅ Deployment successful - App is healthy"
+        else
+          echo "❌ Deployment failed - App is not responding"
+          sudo docker logs nextjs-stripe-app
+          exit 1
+        fi
