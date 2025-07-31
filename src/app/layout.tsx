@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -29,7 +30,9 @@ export default function RootLayout({
 		<html lang='en'>
 			<body
 				className={`${instrumentSans.variable} ${instrumentSerif.variable} antialiased font-sans`}>
-				{children}
+				<ToastProvider>
+					{children}
+				</ToastProvider>
 				<Analytics />
 			</body>
 		</html>

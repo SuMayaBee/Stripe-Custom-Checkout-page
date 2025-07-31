@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/toast";
 import { CreditCard, Copy, Plus, Trash, Eye, Gear } from "@phosphor-icons/react";
 import Image from "next/image";
 
@@ -18,6 +19,7 @@ interface PaymentLink {
 }
 
 export default function AdminPage() {
+	const { showToast } = useToast();
 	const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([]);
 	const [showCreateForm, setShowCreateForm] = useState(false);
 	const [showSettings, setShowSettings] = useState(false);
@@ -68,13 +70,15 @@ export default function AdminPage() {
 			setShowCreateForm(false);
 		} catch (error) {
 			console.error('Error creating payment link:', error);
-			alert('Failed to create payment link. Please try again.');
+			showToast('Failed to create payment link. Please try again.', 'error');
 		}
 	};
 
 	const copyToClipboard = (link: string) => {
 		navigator.clipboard.writeText(link);
-		alert('Payment link copied to clipboard!');
+		showToast('Payment link copied to clipboard!', 'success', { 
+			showCopyButton: false 
+		});
 	};
 
 	const deletePaymentLink = async (id: string) => {
@@ -90,7 +94,7 @@ export default function AdminPage() {
 			setPaymentLinks(prev => prev.filter(link => link.id !== id));
 		} catch (error) {
 			console.error('Error deleting payment link:', error);
-			alert('Failed to delete payment link. Please try again.');
+			showToast('Failed to delete payment link. Please try again.', 'error');
 		}
 	};
 
@@ -156,8 +160,10 @@ export default function AdminPage() {
 				setShowSettings(false);
 				
 				// Show success message and logout
-				alert('Credentials updated successfully! You will be logged out.');
-				handleLogout();
+				showToast('Credentials updated successfully! You will be logged out.', 'success');
+				setTimeout(() => {
+					handleLogout();
+				}, 2000);
 			} else {
 				setSettingsError(data.error || "Failed to update credentials");
 			}

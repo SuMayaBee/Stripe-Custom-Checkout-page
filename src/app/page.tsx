@@ -18,11 +18,10 @@ function HomePageContent() {
 		const paymentIntent = searchParams.get('payment_intent');
 
 		if (redirectStatus === 'succeeded' && paymentIntent) {
-			setShowSuccess(true);
-			// Clean up URL after showing success
-			window.history.replaceState({}, '', '/');
+			// Redirect to dedicated success page
+			router.push(`/success?redirect_status=${redirectStatus}&payment_intent=${paymentIntent}&payment_intent_client_secret=${searchParams.get('payment_intent_client_secret') || ''}`);
 		} else {
-			// Redirect to admin panel if not showing success
+			// For direct visits to home page, redirect to admin
 			router.push('/admin');
 		}
 	}, [searchParams, router]);
