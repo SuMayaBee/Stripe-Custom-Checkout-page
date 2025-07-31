@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle, X } from "@phosphor-icons/react";
 import Image from "next/image";
 
-export default function SuccessPage() {
+function SuccessPageContent() {
 	const [paymentDetails, setPaymentDetails] = useState<any>(null);
 	const [loading, setLoading] = useState(true);
 	const searchParams = useSearchParams();
@@ -275,5 +275,20 @@ export default function SuccessPage() {
 				</button>
 			</div>
 		</div>
+	);
+}
+expo
+rt default function SuccessPage() {
+	return (
+		<Suspense fallback={
+			<div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center">
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+					<p className="text-gray-600">Loading...</p>
+				</div>
+			</div>
+		}>
+			<SuccessPageContent />
+		</Suspense>
 	);
 }
