@@ -10,6 +10,7 @@ function HomePageContent() {
 	const [showSuccess, setShowSuccess] = useState(false);
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	
 
 	// All hooks must be at the top level
 	useEffect(() => {
