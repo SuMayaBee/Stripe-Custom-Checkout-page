@@ -49,11 +49,11 @@ jobs:
         command_timeout: 10m
         script: |
           # Stop and remove existing container
-          docker stop stripe-checkout || true
-          docker rm stripe-checkout || true
+          sudo docker stop stripe-checkout || true
+          sudo docker rm stripe-checkout || true
           
           # Pull the latest image
-          docker pull sumaiya369/checkout:latest
+          sudo docker pull sumaiya369/checkout:latest
           
           # Create secure environment file if it doesn't exist
           sudo mkdir -p /opt/app
@@ -65,7 +65,7 @@ jobs:
           fi
           
           # Run the new container with secure environment variables
-          docker run -d \
+          sudo docker run -d \
             --name stripe-checkout \
             -p 3000:3000 \
             --env-file /opt/app/.env.production \
@@ -73,4 +73,4 @@ jobs:
             sumaiya369/checkout:latest
           
           # Clean up old images
-          docker image prune -f
+          sudo docker image prune -f
