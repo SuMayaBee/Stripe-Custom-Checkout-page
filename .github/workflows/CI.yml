@@ -44,6 +44,9 @@ jobs:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        timeout: 60s
+        command_timeout: 10m
         script: |
           # Stop and remove existing container
           docker stop stripe-checkout || true
