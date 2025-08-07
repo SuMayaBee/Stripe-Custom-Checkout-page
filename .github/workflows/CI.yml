@@ -19,15 +19,55 @@ jobs:
       
     - name: Build the Docker image with build arguments
       env:
-        STRIPE_SECRET_KEY: ${{secrets.STRIPE_SECRET_KEY}}
         NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}}
         NEXT_PUBLIC_BASE_URL: ${{secrets.NEXT_PUBLIC_BASE_URL}}
       run: |
+        # NOTE: STRIPE_SECRET_KEY is NOT included in build for security
+        # It will be provided at runtime via environment variables
         docker build \
-          --build-arg STRIPE_SECRET_KEY="${STRIPE_SECRET_KEY}" \
           --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}" \
           --build-arg NEXT_PUBLIC_BASE_URL="${NEXT_PUBLIC_BASE_URL}" \
           -t sumaiya369/checkout:latest .
           
     - name: Push to Docker Hub
       run: docker push sumaiya369/checkout:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          # Stop and remove existing container
+          docker stop stripe-checkout || true
+          docker rm stripe-checkout || true
+          
+          # Pull the latest image
+          docker pull sumaiya369/checkout:latest
+          
+          # Create secure environment file if it doesn't exist
+          sudo mkdir -p /opt/app
+          if [ ! -f /opt/app/.env.production ]; then
+            echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" | sudo tee /opt/app/.env.production
+            echo "NODE_ENV=production" | sudo tee -a /opt/app/.env.production
+            sudo chmod 600 /opt/app/.env.production
+            sudo chown ubuntu:ubuntu /opt/app/.env.production
+          fi
+          
+          # Run the new container with secure environment variables
+          docker run -d \
+            --name stripe-checkout \
+            -p 3000:3000 \
+            --env-file /opt/app/.env.production \
+            --restart unless-stopped \
+            sumaiya369/checkout:latest
+          
+          # Clean up old images
+          docker image prune -f

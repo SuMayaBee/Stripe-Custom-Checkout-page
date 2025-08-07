@@ -13,18 +13,28 @@ This guide covers multiple deployment options for your Next.js Stripe Custom Che
 
 #### Setup Steps
 
-1. **Add GitHub Secrets**
+1. **Add GitHub Secrets** (See GITHUB_SECRETS_SETUP.md for detailed instructions)
    Go to your GitHub repository → Settings → Secrets and variables → Actions
 
    Required secrets:
    ```
-   STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
-   DEPLOY_HOST=your-server-ip-or-domain
-   DEPLOY_USER=your-server-username
-   DEPLOY_SSH_KEY=your-private-ssh-key
-   DEPLOY_PORT=22 (optional, defaults to 22)
+   # Docker Hub
+   DOCKER_USERNAME=your_dockerhub_username
+   DOCKER_PASSWORD=your_dockerhub_password
+   
+   # Public Configuration (safe to include in build)
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_your_publishable_key
+   NEXT_PUBLIC_BASE_URL=https://yourdomain.com
+   
+   # Deployment Configuration
+   DEPLOY_HOST=your-ec2-ip-or-domain
+   EC2_SSH_KEY=your_private_ssh_key_content
+   
+   # Secret Key (NEVER included in Docker image - runtime only)
+   STRIPE_SECRET_KEY=sk_live_your_NEW_secret_key
    ```
+
+   ⚠️ **SECURITY**: The STRIPE_SECRET_KEY is NEVER embedded in the Docker image. It's only provided at runtime on your server.
 
 2. **Push to main branch**
    ```bash

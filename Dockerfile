@@ -11,15 +11,16 @@ RUN corepack enable pnpm && pnpm install
 # Copy source code
 COPY . .
 
-# Accept build arguments for environment variables
-ARG STRIPE_SECRET_KEY
+# Accept build arguments for environment variables (PUBLIC KEYS ONLY)
 ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ARG NEXT_PUBLIC_BASE_URL
 
-# Set environment variables from build args
-ENV STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY
+# Set environment variables from build args (PUBLIC KEYS ONLY)
 ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
+
+# NOTE: STRIPE_SECRET_KEY should NEVER be in the Docker image
+# It will be provided at runtime via environment variables
 
 # Build the application with environment variables
 RUN pnpm run build

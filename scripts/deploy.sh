@@ -33,8 +33,8 @@ fi
 
 # Build Docker image
 echo -e "${GREEN}🔨 Building Docker image...${NC}"
+# NOTE: STRIPE_SECRET_KEY is NOT included in build - it's provided at runtime for security
 docker build \
-    --build-arg STRIPE_SECRET_KEY="${STRIPE_SECRET_KEY}" \
     --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}" \
     --build-arg NEXT_PUBLIC_BASE_URL="${NEXT_PUBLIC_BASE_URL}" \
     -t $IMAGE_NAME .
