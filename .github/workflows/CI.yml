@@ -55,14 +55,14 @@ jobs:
           # Pull the latest image
           sudo docker pull sumaiya369/checkout:latest
           
-          # Create secure environment file if it doesn't exist
+          # Create secure environment file with all required variables
           sudo mkdir -p /opt/app
-          if [ ! -f /opt/app/.env.production ]; then
-            echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" | sudo tee /opt/app/.env.production
-            echo "NODE_ENV=production" | sudo tee -a /opt/app/.env.production
-            sudo chmod 600 /opt/app/.env.production
-            sudo chown ubuntu:ubuntu /opt/app/.env.production
-          fi
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" | sudo tee /opt/app/.env.production
+          echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}" | sudo tee -a /opt/app/.env.production
+          echo "NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}" | sudo tee -a /opt/app/.env.production
+          echo "NODE_ENV=production" | sudo tee -a /opt/app/.env.production
+          sudo chmod 600 /opt/app/.env.production
+          sudo chown ubuntu:ubuntu /opt/app/.env.production
           
           # Run the new container with secure environment variables
           sudo docker run -d \
