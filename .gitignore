@@ -38,7 +38,7 @@ yarn-error.log*
 
 # vercel
 .vercel
-
+.kiro
 
 # data directory - keep structure but ignore content in production
 # data/
